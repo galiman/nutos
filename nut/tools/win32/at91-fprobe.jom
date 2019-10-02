@@ -1,0 +1,34 @@
+; Probing FLASH Chip
+; ==================
+
+    NOTE Probing FLASH.
+    NOTE Make sure that S2 is in position A21/A22 = Ori/Ori.
+    NOTE If not sure, press Ctrl-C now.
+    WAIT 2000
+
+	; First try without Flasher Tool. CFI devices don't need it.
+    FLASH 0x10000000
+    ONERR NonCFI
+    NOTE CFI found
+    QUIT
+
+NonCFI:
+    ; No CFI device found, upload the Flasher Tool.
+    NOTE CFI not found, uploading flasher...
+    SAVE 0x00000000 ./flasher.bin
+    ONERR ProbeError
+    NOTE Upload OK, starting flasher...
+
+    ; Start the Flasher Tool
+    SAVE CPSR 0x000000D3
+    CONTINUE 0
+    WAIT 100
+    NOTE Flasher running, probing FLASH
+    
+    ; Get flash device ID
+    FLASH 0x10000000
+    ONERR ProbeError
+    QUIT
+
+ProbeError:
+	QUIT 3

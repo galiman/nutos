@@ -1,0 +1,223 @@
+; Upload an image to the RAM
+; ==========================
+RAM:
+    ; Reset target and remap
+    RESET
+    BATCH at91-remap.jom
+    ONERR ErrorExit
+    NOTE Reset OK, uploading...
+
+    ; Upload application
+    SAVE 0x00000000 $IMAGE
+    ONERR ErrorImage
+    NOTE Upload OK, starting...
+
+    ; Start application
+    SAVE CPSR 0x000000D3
+    CONTINUE 0
+    ONERR ErrorStart
+    NOTE Done
+    QUIT
+
+; Upload a bootloader image to the FLASH
+; ======================================
+FLASHBOOT:
+    NOTE Burning boot loader section.
+    ; Perform hardware reset and remap memory.
+    RESET
+    BATCH at91-remap.jom
+    ONERR ErrorExit
+
+	; Probe FLASH memory.
+    BATCH at91-fprobe.jom
+    ONERR ErrorExit
+
+    ; Erase first 256k of boot loader section.
+    NOTE Erasing boot loader section
+    FLASH 0x10000000 0x10000000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10002000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10004000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10006000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10008000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x1000A000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x1000C000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x1000E000
+    ONERR ErrorErase
+	FLASH 0x10000000 0x10010000
+    ONERR ErrorErase
+	FLASH 0x10000000 0x10020000
+    ONERR ErrorErase
+	FLASH 0x10000000 0x10030000
+    ONERR ErrorErase
+
+    NOTE Flashing $IMAGE
+    FLASH 0x10000000 0x10000000 $IMAGE
+    ONERR ErrorImage
+	JUMP Flashed
+
+; Upload a RAM application image to the FLASH
+; ===========================================
+FLASH:
+    NOTE Burning application section 1.
+    ; Perform hardware reset and remap memory.
+    RESET
+    BATCH at91-remap.jom
+    ONERR ErrorExit
+    
+	; Probe FLASH memory.
+    BATCH at91-fprobe.jom
+    ONERR ErrorExit
+
+    ; Erase first 256k of application section 1.
+    NOTE Erasing application section 1
+    FLASH 0x10000000 0x10100000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10110000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10120000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10130000
+    ONERR ErrorErase
+    
+    NOTE Flashing $IMAGE
+    FLASH 0x10000000 0x10100000 $IMAGE
+    ONERR ErrorImage
+	JUMP Flashed
+
+; Upload a ROM application image to the FLASH
+; ===========================================
+FLASHROM:
+    NOTE Burning application section 2.
+    ; Perform hardware reset and remap memory.
+    RESET
+    BATCH at91-remap.jom
+    ONERR ErrorExit
+
+	; Probe FLASH memory.
+    BATCH at91-fprobe.jom
+    ONERR ErrorExit
+
+    ; Erase application section 2
+    NOTE Erasing application section 2
+    FLASH 0x10000000 0x10200000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10210000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10220000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10230000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10240000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10250000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10260000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10270000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10280000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10290000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x102A0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x102B0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x102C0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x102D0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x102E0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x102F0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10300000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10310000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10320000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10330000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10340000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10350000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10360000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10370000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10380000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x10390000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x103A0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x103B0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x103C0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x103D0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x103E0000
+    ONERR ErrorErase
+    FLASH 0x10000000 0x103F0000
+    ONERR ErrorErase
+    
+    NOTE Flashing $IMAGE
+    FLASH 0x10000000 0x10200000 $IMAGE
+    ONERR ErrorImage
+
+Flashed:
+    NOTE $IMAGE flashed, resetting target
+    RESET
+    QUIT
+
+ErrorFlasher:
+    NOTE ERROR: Running flasher failed.
+    JUMP ErrorExit
+
+ErrorErase:
+    NOTE ERROR: Flash erase failed.
+    JUMP ErrorExit
+
+ErrorImage:
+    NOTE ERROR: Uploading $IMAGE failed.
+    JUMP ErrorExit
+
+ErrorStart:
+    NOTE ERROR: Failed to start application.
+    JUMP ErrorExit
+
+ErrorExit:
+    QUIT 3
+
+; Copyright (C) 2005-2007 by egnite Software GmbH
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the Free
+; Software Foundation; either version 2 of the License, or (at your option)
+; any later version.
+;
+; This program is distributed in the hope that it will be useful, but WITHOUT
+; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+; more details.
+;
+; You should have received a copy of the GNU General Public License along with
+; this program; if not, write to the Free Software Foundation, Inc.,
+; 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+;
+; $Log: at91-upl.jom,v $
+; Revision 1.2  2005/09/14 09:06:34  haraldkipp
+; Log history keyword corrected.
+;
+;
+
